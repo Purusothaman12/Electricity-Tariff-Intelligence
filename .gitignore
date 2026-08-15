@@ -1,0 +1,46 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local Python version
+.python-version
+
+# Chroma persistent database
+output/chroma_test/
+
+# Temporary extraction/test output
+output/docling_test/
+output/test_rates/
+
+# Legacy FAISS vector store
+vector_store/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
