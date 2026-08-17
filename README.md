@@ -522,10 +522,7 @@ Potential extensions include:
 * Cloud deployment.
 
 ---
+##Final Frontend
+<img width="1895" height="948" alt="Screenshot 2026-08-18 001256" src="https://github.com/user-attachments/assets/73860f42-67bf-4489-9fe6-ac259f5de52e" />
 
-## Author
-
-**Purusothaman S**
-
-Data Analyst | Python | SQL | Machine Learning | NLP | Generative AI | RAG
 
