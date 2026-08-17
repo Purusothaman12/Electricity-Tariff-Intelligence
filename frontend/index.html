@@ -1,0 +1,2910 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Electricity Tariff Intelligence
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        :root {
+
+            --navy: #102b49;
+
+            --navy-dark: #081d33;
+
+            --blue: #2563eb;
+
+            --blue-light: #eaf1ff;
+
+            --green: #059669;
+
+            --background: #f4f7fb;
+
+            --white: #ffffff;
+
+            --text: #27364a;
+
+            --muted: #64748b;
+
+            --border: #e2e8f0;
+
+        }
+
+
+        body {
+
+            margin: 0;
+
+            height: 100vh;
+
+            overflow: hidden;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                var(--background);
+
+            color:
+                var(--text);
+
+        }
+
+
+        /* =====================================================
+           APPLICATION
+        ===================================================== */
+
+
+        .app {
+
+            height: 100vh;
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        /* =====================================================
+           TOP HEADER
+        ===================================================== */
+
+
+        .top-header {
+
+            height: 72px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding:
+                0 30px;
+
+            background:
+                var(--white);
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+        }
+
+
+        .brand-logo {
+
+            width: 45px;
+
+            height: 45px;
+
+            border-radius: 13px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #102b49
+                );
+
+            color: white;
+
+            font-size: 22px;
+
+            box-shadow:
+                0 8px 20px
+                rgba(
+                    37,
+                    99,
+                    235,
+                    0.18
+                );
+
+        }
+
+
+        .brand-title {
+
+            font-size: 19px;
+
+            font-weight: 700;
+
+            color:
+                var(--navy);
+
+        }
+
+
+        .brand-subtitle {
+
+            margin-top: 2px;
+
+            font-size: 11px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .system-status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                8px 13px;
+
+            border-radius:
+                999px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            background:
+                #f1f5f9;
+
+            border:
+                1px solid #e2e8f0;
+
+            color:
+                #64748b;
+
+        }
+
+
+        .status-dot {
+
+            width: 8px;
+
+            height: 8px;
+
+            border-radius: 50%;
+
+            background:
+                #94a3b8;
+
+        }
+
+
+        .system-status.ready {
+
+            background:
+                #ecfdf5;
+
+            border-color:
+                #bbf7d0;
+
+            color:
+                #047857;
+
+        }
+
+
+        .system-status.ready
+        .status-dot {
+
+            background:
+                #16a34a;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(
+                    22,
+                    163,
+                    74,
+                    0.10
+                );
+
+        }
+
+
+        .system-status.error {
+
+            background:
+                #fff1f2;
+
+            border-color:
+                #fecdd3;
+
+            color:
+                #be123c;
+
+        }
+
+
+        .system-status.error
+        .status-dot {
+
+            background:
+                #e11d48;
+
+        }
+
+
+        /* =====================================================
+           MAIN LAYOUT
+        ===================================================== */
+
+
+        .main {
+
+            flex: 1;
+
+            display: flex;
+
+            overflow: hidden;
+
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+
+        .sidebar {
+
+            width: 270px;
+
+            flex-shrink: 0;
+
+            padding:
+                24px 18px;
+
+            overflow-y: auto;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #102b49,
+                    #081d33
+                );
+
+        }
+
+
+        .new-chat {
+
+            width: 100%;
+
+            padding:
+                12px;
+
+            margin-bottom:
+                28px;
+
+            border-radius:
+                10px;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            font-size: 12px;
+
+            color: white;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.08
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.14
+                );
+
+        }
+
+
+        .new-chat:hover {
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.13
+                );
+
+        }
+
+
+        .sidebar-heading {
+
+            margin-bottom:
+                12px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                1.2px;
+
+            color:
+                #91a6bd;
+
+        }
+
+
+        .examples {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 9px;
+
+        }
+
+
+        .example {
+
+            padding:
+                11px;
+
+            border-radius:
+                9px;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.45;
+
+            cursor: pointer;
+
+            color:
+                #dbeafe;
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.07
+                );
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.045
+                );
+
+        }
+
+
+        .example:hover {
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.11
+                );
+
+        }
+
+
+        .tech-section {
+
+            margin-top:
+                30px;
+
+            padding-top:
+                20px;
+
+            border-top:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.10
+                );
+
+        }
+
+
+        .tech {
+
+            display: inline-block;
+
+            margin:
+                3px 2px;
+
+            padding:
+                5px 7px;
+
+            border-radius:
+                6px;
+
+            font-size:
+                9px;
+
+            color:
+                #cbd5e1;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.06
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.08
+                );
+
+        }
+
+
+        /* =====================================================
+           CHAT AREA
+        ===================================================== */
+
+
+        .chat-area {
+
+            flex: 1;
+
+            min-width: 0;
+
+            display: flex;
+
+            flex-direction: column;
+
+            background:
+                white;
+
+        }
+
+
+        /* =====================================================
+           CHAT HEADER
+        ===================================================== */
+
+
+        .chat-header {
+
+            height: 66px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding:
+                0 28px;
+
+            border-bottom:
+                1px solid
+                var(--border);
+
+        }
+
+
+        .chat-title {
+
+            font-size: 15px;
+
+            font-weight: 650;
+
+            color:
+                var(--navy);
+
+        }
+
+
+        .chat-description {
+
+            margin-top: 3px;
+
+            font-size: 10px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .model {
+
+            padding:
+                7px 10px;
+
+            border-radius:
+                7px;
+
+            font-size: 10px;
+
+            color:
+                #475569;
+
+            background:
+                #f1f5f9;
+
+            border:
+                1px solid
+                var(--border);
+
+        }
+
+
+        /* =====================================================
+           MESSAGES
+        ===================================================== */
+
+
+        .messages {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding:
+                28px 34px;
+
+            background:
+
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(
+                        37,
+                        99,
+                        235,
+                        0.035
+                    ),
+                    transparent 30%
+                ),
+
+                white;
+
+        }
+
+
+        .welcome {
+
+            text-align: center;
+
+            margin:
+                18px auto 35px;
+
+        }
+
+
+        .welcome-logo {
+
+            width: 55px;
+
+            height: 55px;
+
+            margin: auto;
+
+            border-radius:
+                15px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 25px;
+
+            color:
+                var(--blue);
+
+            background:
+                var(--blue-light);
+
+        }
+
+
+        .welcome-title {
+
+            margin-top:
+                13px;
+
+            font-size:
+                19px;
+
+            font-weight:
+                700;
+
+            color:
+                var(--navy);
+
+        }
+
+
+        .welcome-text {
+
+            max-width:
+                520px;
+
+            margin:
+                6px auto;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.6;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+
+        .message {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        .message.user {
+
+            justify-content:
+                flex-end;
+
+        }
+
+
+        .avatar {
+
+            width: 32px;
+
+            height: 32px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius:
+                9px;
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .assistant-avatar {
+
+            background:
+                #eaf1ff;
+
+            color:
+                var(--blue);
+
+        }
+
+
+        .user-avatar {
+
+            order: 2;
+
+            background:
+                #e2e8f0;
+
+            color:
+                #475569;
+
+        }
+
+
+        .bubble {
+
+            max-width:
+                720px;
+
+            padding:
+                14px 16px;
+
+            border-radius:
+                15px;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.65;
+
+            white-space:
+                pre-wrap;
+
+            word-break:
+                break-word;
+
+        }
+
+
+        .user .bubble {
+
+            color: white;
+
+            background:
+                var(--navy);
+
+            border-bottom-right-radius:
+                4px;
+
+        }
+
+
+        .assistant .bubble {
+
+            color:
+                #334155;
+
+            background:
+                #f8fafc;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-bottom-left-radius:
+                4px;
+
+        }
+
+
+        /* =====================================================
+           EVIDENCE
+        ===================================================== */
+
+
+        .evidence {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap:
+                7px 13px;
+
+            margin-top:
+                12px;
+
+            padding-top:
+                10px;
+
+            border-top:
+                1px solid
+                #e2e8f0;
+
+            font-size:
+                9px;
+
+            color:
+                #64748b;
+
+        }
+
+
+        .evidence-badge {
+
+            padding:
+                3px 6px;
+
+            border-radius:
+                5px;
+
+            background:
+                #f1f5f9;
+
+        }
+
+
+        .grounded {
+
+            color:
+                #047857;
+
+            background:
+                #ecfdf5;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .fallback {
+
+            color:
+                #b45309;
+
+            background:
+                #fffbeb;
+
+        }
+
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+
+        .loading-dots {
+
+            display: flex;
+
+            gap: 5px;
+
+            padding:
+                3px;
+
+        }
+
+
+        .loading-dot {
+
+            width: 6px;
+
+            height: 6px;
+
+            border-radius:
+                50%;
+
+            background:
+                #64748b;
+
+            animation:
+                bounce 1.3s infinite;
+
+        }
+
+
+        .loading-dot:nth-child(2) {
+
+            animation-delay:
+                0.15s;
+
+        }
+
+
+        .loading-dot:nth-child(3) {
+
+            animation-delay:
+                0.30s;
+
+        }
+
+
+        @keyframes bounce {
+
+            0%,
+            60%,
+            100% {
+
+                transform:
+                    translateY(0);
+
+            }
+
+            30% {
+
+                transform:
+                    translateY(-6px);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           INPUT
+        ===================================================== */
+
+
+        .input-wrapper {
+
+            flex-shrink: 0;
+
+            padding:
+                15px 26px 20px;
+
+            border-top:
+                1px solid
+                var(--border);
+
+            background:
+                white;
+
+        }
+
+
+        .input-container {
+
+            max-width:
+                950px;
+
+            margin: auto;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                7px 7px 7px 14px;
+
+            border-radius:
+                14px;
+
+            background:
+                #f8fafc;
+
+            border:
+                1px solid
+                #cbd5e1;
+
+        }
+
+
+        .input-container:focus-within {
+
+            border-color:
+                #60a5fa;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    37,
+                    99,
+                    235,
+                    0.07
+                );
+
+        }
+
+
+        #question {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 8px;
+
+            border: none;
+
+            outline: none;
+
+            background:
+                transparent;
+
+            color:
+                #1e293b;
+
+            font-size:
+                12px;
+
+        }
+
+
+        #sendButton {
+
+            width: 40px;
+
+            height: 40px;
+
+            flex-shrink: 0;
+
+            border: none;
+
+            border-radius:
+                10px;
+
+            cursor: pointer;
+
+            color: white;
+
+            font-size: 17px;
+
+            background:
+                var(--blue);
+
+        }
+
+
+        #sendButton:hover {
+
+            background:
+                #1d4ed8;
+
+        }
+
+
+        #sendButton:disabled {
+
+            cursor:
+                not-allowed;
+
+            background:
+                #94a3b8;
+
+        }
+
+
+        .footer-info {
+
+            margin-top: 8px;
+
+            text-align: center;
+
+            font-size: 9px;
+
+            color:
+                #94a3b8;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+
+        @media (
+            max-width: 800px
+        ) {
+
+            .sidebar {
+
+                display: none;
+
+            }
+
+
+            .top-header {
+
+                padding:
+                    0 15px;
+
+            }
+
+
+            .brand-subtitle {
+
+                display: none;
+
+            }
+
+
+            .system-status {
+
+                padding:
+                    7px 9px;
+
+            }
+
+
+            .messages {
+
+                padding:
+                    20px 15px;
+
+            }
+
+
+            .chat-header {
+
+                padding:
+                    0 15px;
+
+            }
+
+
+            .model {
+
+                display: none;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- ===================================================
+         TOP HEADER
+    ==================================================== -->
+
+
+    <header class="top-header">
+
+
+        <div class="brand">
+
+
+            <div class="brand-logo">
+
+                ⚡
+
+            </div>
+
+
+            <div>
+
+
+                <div class="brand-title">
+
+                    Electricity Tariff Intelligence
+
+                </div>
+
+
+                <div class="brand-subtitle">
+
+                    Grounded RAG assistant for
+                    utility tariff analysis
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <div
+            class="system-status"
+            id="systemStatus"
+        >
+
+
+            <div class="status-dot"></div>
+
+
+            <span id="statusText">
+
+                Checking system...
+
+            </span>
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- ===================================================
+         MAIN
+    ==================================================== -->
+
+
+    <div class="main">
+
+
+        <!-- ===============================================
+             SIDEBAR
+        ================================================ -->
+
+
+        <aside class="sidebar">
+
+
+            <button
+                class="new-chat"
+                onclick="clearChat()"
+            >
+
+                ＋ New conversation
+
+            </button>
+
+
+
+            <div class="sidebar-heading">
+
+                Example Questions
+
+            </div>
+
+
+
+            <div class="examples">
+
+
+                <div
+                    class="example"
+                    onclick="
+                        useExample(
+                            'What is the Residential Service Customer Charge?'
+                        )
+                    "
+                >
+
+                    What is the Residential
+                    Service Customer Charge?
+
+                </div>
+
+
+
+                <div
+                    class="example"
+                    onclick="
+                        useExample(
+                            'What charges are available under Lighting Service?'
+                        )
+                    "
+                >
+
+                    What charges are available
+                    under Lighting Service?
+
+                </div>
+
+
+
+                <div
+                    class="example"
+                    onclick="
+                        useExample(
+                            'Which Riders were added in the new tariff?'
+                        )
+                    "
+                >
+
+                    Which Riders were added
+                    in the new tariff?
+
+                </div>
+
+
+
+                <div
+                    class="example"
+                    onclick="
+                        useExample(
+                            'Compare the Residential Transmission System Charge effective in 2018 and 2023.'
+                        )
+                    "
+                >
+
+                    Compare Residential
+                    Transmission System Charge
+
+                </div>
+
+
+
+                <div
+                    class="example"
+                    onclick="
+                        useExample(
+                            'Which tariff sections are marked not applicable?'
+                        )
+                    "
+                >
+
+                    Which tariff sections are
+                    marked not applicable?
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="tech-section">
+
+
+                <div class="sidebar-heading">
+
+                    Powered By
+
+                </div>
+
+
+                <span class="tech">
+                    Python
+                </span>
+
+
+                <span class="tech">
+                    FastAPI
+                </span>
+
+
+                <span class="tech">
+                    ChromaDB
+                </span>
+
+
+                <span class="tech">
+                    MiniLM
+                </span>
+
+
+                <span class="tech">
+                    RAG
+                </span>
+
+
+                <span class="tech">
+                    Llama 3.2
+                </span>
+
+
+                <span class="tech">
+                    Ollama
+                </span>
+
+
+                <span class="tech">
+                    Docling
+                </span>
+
+
+            </div>
+
+
+        </aside>
+
+
+
+        <!-- ===============================================
+             CHAT AREA
+        ================================================ -->
+
+
+        <main class="chat-area">
+
+
+            <div class="chat-header">
+
+
+                <div>
+
+
+                    <div class="chat-title">
+
+                        Tariff Assistant
+
+                    </div>
+
+
+                    <div class="chat-description">
+
+                        Ask about rates, riders,
+                        effective dates and historical tariff changes
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="model">
+
+                    Llama 3.2 • Local
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ===========================================
+                 MESSAGES
+            ============================================ -->
+
+
+            <div
+                class="messages"
+                id="messages"
+            >
+
+
+                <div
+                    class="welcome"
+                    id="welcome"
+                >
+
+
+                    <div class="welcome-logo">
+
+                        ⚡
+
+                    </div>
+
+
+                    <div class="welcome-title">
+
+                        Ask your tariff data
+
+                    </div>
+
+
+                    <div class="welcome-text">
+
+                        Ask natural-language questions
+                        about electricity tariff rates,
+                        schedules, riders, effective dates
+                        and historical tariff changes.
+
+                        <br><br>
+
+                        Answers are retrieved from
+                        indexed tariff evidence and
+                        validated before being returned.
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ===========================================
+                 INPUT
+            ============================================ -->
+
+
+            <div class="input-wrapper">
+
+
+                <div class="input-container">
+
+
+                    <input
+
+                        id="question"
+
+                        type="text"
+
+                        autocomplete="off"
+
+                        placeholder="
+                        Ask a question about the tariff...
+                        "
+
+                    >
+
+
+                    <button
+                        id="sendButton"
+                        onclick="sendQuestion()"
+                    >
+
+                        ➜
+
+                    </button>
+
+
+                </div>
+
+
+                <div class="footer-info">
+
+                    Grounded RAG • ChromaDB •
+                    Sentence Transformers •
+                    Llama 3.2 • FastAPI
+
+                </div>
+
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+    /* =====================================================
+       API ENDPOINTS
+
+       IMPORTANT:
+       Frontend is served by FastAPI itself.
+
+       Therefore we use relative URLs.
+
+       Browser:
+           /ui
+
+       API:
+           /ask
+           /health
+
+       All run on the same host and port.
+    ===================================================== */
+
+
+    const ASK_URL =
+        "/ask";
+
+
+    const HEALTH_URL =
+        "/health";
+
+
+
+    /* =====================================================
+       DOM ELEMENTS
+    ===================================================== */
+
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+
+    const input =
+        document.getElementById(
+            "question"
+        );
+
+
+    const sendButton =
+        document.getElementById(
+            "sendButton"
+        );
+
+
+    const systemStatus =
+        document.getElementById(
+            "systemStatus"
+        );
+
+
+    const statusText =
+        document.getElementById(
+            "statusText"
+        );
+
+
+
+    /* =====================================================
+       ENTER KEY
+    ===================================================== */
+
+
+    input.addEventListener(
+
+        "keydown",
+
+        function(event) {
+
+
+            if (
+                event.key === "Enter"
+                &&
+                !sendButton.disabled
+            ) {
+
+
+                sendQuestion();
+
+
+            }
+
+
+        }
+
+    );
+
+
+
+    /* =====================================================
+       HEALTH CHECK
+    ===================================================== */
+
+
+    async function checkHealth() {
+
+
+        try {
+
+
+            const response =
+                await fetch(
+                    HEALTH_URL,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+
+                throw new Error(
+                    "Health request failed."
+                );
+
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+
+            if (
+                data.ready
+            ) {
+
+
+                systemStatus.className =
+                    "system-status ready";
+
+
+                statusText.textContent =
+                    "RAG System Ready";
+
+
+            }
+
+
+            else {
+
+
+                systemStatus.className =
+                    "system-status error";
+
+
+                statusText.textContent =
+                    "System Not Ready";
+
+
+            }
+
+
+        }
+
+
+        catch (
+            error
+        ) {
+
+
+            systemStatus.className =
+                "system-status error";
+
+
+            statusText.textContent =
+                "Backend Offline";
+
+
+        }
+
+
+    }
+
+
+
+    /* =====================================================
+       EXAMPLE QUESTION
+    ===================================================== */
+
+
+    function useExample(
+        question
+    ) {
+
+
+        input.value =
+            question;
+
+
+        input.focus();
+
+
+    }
+
+
+
+    /* =====================================================
+       CLEAR CHAT
+    ===================================================== */
+
+
+    function clearChat() {
+
+
+        messages.innerHTML =
+        `
+
+            <div
+                class="welcome"
+                id="welcome"
+            >
+
+                <div class="welcome-logo">
+
+                    ⚡
+
+                </div>
+
+
+                <div class="welcome-title">
+
+                    Ask your tariff data
+
+                </div>
+
+
+                <div class="welcome-text">
+
+                    Ask natural-language questions
+                    about electricity tariff rates,
+                    schedules, riders, effective dates
+                    and historical tariff changes.
+
+                    <br><br>
+
+                    Answers are retrieved from
+                    indexed tariff evidence and
+                    validated before being returned.
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        input.value =
+            "";
+
+
+        input.focus();
+
+
+    }
+
+
+
+    /* =====================================================
+       USER MESSAGE
+    ===================================================== */
+
+
+    function addUserMessage(
+        text
+    ) {
+
+
+        const welcome =
+            document.getElementById(
+                "welcome"
+            );
+
+
+        if (
+            welcome
+        ) {
+
+
+            welcome.remove();
+
+
+        }
+
+
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        wrapper.className =
+            "message user";
+
+
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "bubble";
+
+
+        bubble.textContent =
+            text;
+
+
+
+        const avatar =
+            document.createElement(
+                "div"
+            );
+
+
+        avatar.className =
+            "avatar user-avatar";
+
+
+        avatar.textContent =
+            "You";
+
+
+
+        wrapper.appendChild(
+            bubble
+        );
+
+
+        wrapper.appendChild(
+            avatar
+        );
+
+
+        messages.appendChild(
+            wrapper
+        );
+
+
+        scrollToBottom();
+
+
+    }
+
+
+
+    /* =====================================================
+       ASSISTANT MESSAGE
+    ===================================================== */
+
+
+    function addAssistantMessage(
+        answer,
+        data
+    ) {
+
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        wrapper.className =
+            "message assistant";
+
+
+
+        const avatar =
+            document.createElement(
+                "div"
+            );
+
+
+        avatar.className =
+            "avatar assistant-avatar";
+
+
+        avatar.textContent =
+            "AI";
+
+
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "bubble";
+
+
+
+        const answerElement =
+            document.createElement(
+                "div"
+            );
+
+
+        answerElement.textContent =
+            answer;
+
+
+
+        bubble.appendChild(
+            answerElement
+        );
+
+
+
+        const evidence =
+            document.createElement(
+                "div"
+            );
+
+
+        evidence.className =
+            "evidence";
+
+
+
+        /* ================================================
+           GROUNDED
+        ================================================= */
+
+
+        if (
+            data
+            &&
+            data.is_grounded === true
+        ) {
+
+
+            addEvidenceBadge(
+                evidence,
+                "✓ Grounded",
+                "grounded"
+            );
+
+
+        }
+
+
+
+        /* ================================================
+           VALIDATED
+        ================================================= */
+
+
+        if (
+            data
+            &&
+            data.validation_passed === true
+        ) {
+
+
+            addEvidenceBadge(
+                evidence,
+                "✓ Validated",
+                "grounded"
+            );
+
+
+        }
+
+
+
+        /* ================================================
+           VALIDATION FALLBACK
+        ================================================= */
+
+
+        if (
+            data
+            &&
+            data.validation_passed === false
+            &&
+            data.generation_method
+        ) {
+
+
+            addEvidenceBadge(
+                evidence,
+                "Verified fallback",
+                "fallback"
+            );
+
+
+        }
+
+
+
+        /* ================================================
+           QUESTION TYPE
+        ================================================= */
+
+
+        if (
+            data
+            &&
+            data.question_type
+        ) {
+
+
+            addEvidenceBadge(
+                evidence,
+                "Type: "
+                +
+                data.question_type
+            );
+
+
+        }
+
+
+
+        /* ================================================
+           MODEL
+        ================================================= */
+
+
+        if (
+            data
+            &&
+            data.model
+        ) {
+
+
+            addEvidenceBadge(
+                evidence,
+                "Model: "
+                +
+                data.model
+            );
+
+
+        }
+
+
+
+        /* ================================================
+           GENERATION METHOD
+        ================================================= */
+
+
+        if (
+            data
+            &&
+            data.generation_method
+        ) {
+
+
+            addEvidenceBadge(
+                evidence,
+                "Generation: "
+                +
+                data.generation_method
+            );
+
+
+        }
+
+
+
+        /* ================================================
+           SOURCE
+        ================================================= */
+
+
+        const source =
+            getSourceFile(
+                data
+            );
+
+
+        if (
+            source
+        ) {
+
+
+            addEvidenceBadge(
+                evidence,
+                "Source: "
+                +
+                source
+            );
+
+
+        }
+
+
+
+        /* ================================================
+           RESPONSE TIME
+        ================================================= */
+
+
+        if (
+            data
+            &&
+            data.total_duration_seconds
+        ) {
+
+
+            const duration =
+                Number(
+                    data.total_duration_seconds
+                );
+
+
+            if (
+                !Number.isNaN(
+                    duration
+                )
+            ) {
+
+
+                addEvidenceBadge(
+                    evidence,
+                    "LLM: "
+                    +
+                    duration.toFixed(1)
+                    +
+                    " sec"
+                );
+
+
+            }
+
+
+        }
+
+
+
+        if (
+            evidence.children.length > 0
+        ) {
+
+
+            bubble.appendChild(
+                evidence
+            );
+
+
+        }
+
+
+
+        wrapper.appendChild(
+            avatar
+        );
+
+
+        wrapper.appendChild(
+            bubble
+        );
+
+
+        messages.appendChild(
+            wrapper
+        );
+
+
+        scrollToBottom();
+
+
+    }
+
+
+
+    /* =====================================================
+       EVIDENCE BADGE
+    ===================================================== */
+
+
+    function addEvidenceBadge(
+        container,
+        text,
+        extraClass = ""
+    ) {
+
+
+        const badge =
+            document.createElement(
+                "span"
+            );
+
+
+        badge.className =
+            "evidence-badge";
+
+
+        if (
+            extraClass
+        ) {
+
+
+            badge.classList.add(
+                extraClass
+            );
+
+
+        }
+
+
+        badge.textContent =
+            text;
+
+
+        container.appendChild(
+            badge
+        );
+
+
+    }
+
+
+
+    /* =====================================================
+       SOURCE EXTRACTION
+
+       Handles multiple possible response structures.
+    ===================================================== */
+
+
+    function getSourceFile(
+        data
+    ) {
+
+
+        if (
+            !data
+        ) {
+
+
+            return "";
+
+
+        }
+
+
+
+        if (
+            data.evidence
+            &&
+            Array.isArray(
+                data.evidence
+            )
+            &&
+            data.evidence.length > 0
+        ) {
+
+
+            const first =
+                data.evidence[0];
+
+
+
+            if (
+                first.metadata
+            ) {
+
+
+                if (
+                    first.metadata.source_file
+                ) {
+
+
+                    return (
+                        first
+                        .metadata
+                        .source_file
+                    );
+
+
+                }
+
+
+
+                if (
+                    first.metadata.source
+                ) {
+
+
+                    return (
+                        first
+                        .metadata
+                        .source
+                    );
+
+
+                }
+
+
+
+                if (
+                    first.metadata.file_name
+                ) {
+
+
+                    return (
+                        first
+                        .metadata
+                        .file_name
+                    );
+
+
+                }
+
+
+            }
+
+
+
+            if (
+                first.source_file
+            ) {
+
+
+                return (
+                    first.source_file
+                );
+
+
+            }
+
+
+
+            if (
+                first.source
+            ) {
+
+
+                return (
+                    first.source
+                );
+
+
+            }
+
+
+
+            if (
+                first.content
+            ) {
+
+
+                const match =
+                    first.content.match(
+                        /Source tariff document:\s*([^.\n]+\.pdf)/i
+                    );
+
+
+                if (
+                    match
+                    &&
+                    match[1]
+                ) {
+
+
+                    return (
+                        match[1]
+                    );
+
+
+                }
+
+
+            }
+
+
+        }
+
+
+
+        if (
+            data.evidence_selection
+            &&
+            data.evidence_selection
+                .selected_source_file
+        ) {
+
+
+            return (
+                data
+                .evidence_selection
+                .selected_source_file
+            );
+
+
+        }
+
+
+
+        if (
+            data.source_file
+        ) {
+
+
+            return (
+                data.source_file
+            );
+
+
+        }
+
+
+
+        return "";
+
+
+    }
+
+
+
+    /* =====================================================
+       LOADING MESSAGE
+    ===================================================== */
+
+
+    function showLoading() {
+
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        wrapper.className =
+            "message assistant";
+
+
+        wrapper.id =
+            "loadingMessage";
+
+
+
+        wrapper.innerHTML =
+        `
+
+            <div
+                class="
+                    avatar
+                    assistant-avatar
+                "
+            >
+
+                AI
+
+            </div>
+
+
+            <div class="bubble">
+
+                <div class="loading-dots">
+
+                    <div
+                        class="loading-dot"
+                    ></div>
+
+                    <div
+                        class="loading-dot"
+                    ></div>
+
+                    <div
+                        class="loading-dot"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+
+        messages.appendChild(
+            wrapper
+        );
+
+
+        scrollToBottom();
+
+
+    }
+
+
+
+    function removeLoading() {
+
+
+        const loading =
+            document.getElementById(
+                "loadingMessage"
+            );
+
+
+        if (
+            loading
+        ) {
+
+
+            loading.remove();
+
+
+        }
+
+
+    }
+
+
+
+    /* =====================================================
+       SEND QUESTION
+    ===================================================== */
+
+
+    async function sendQuestion() {
+
+
+        const question =
+            input.value.trim();
+
+
+
+        if (
+            question === ""
+        ) {
+
+
+            return;
+
+
+        }
+
+
+
+        addUserMessage(
+            question
+        );
+
+
+        input.value =
+            "";
+
+
+        sendButton.disabled =
+            true;
+
+
+        showLoading();
+
+
+
+        try {
+
+
+            const response =
+                await fetch(
+
+                    ASK_URL,
+
+                    {
+
+                        method:
+                            "POST",
+
+                        headers:
+                        {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                            {
+
+                                question:
+                                    question,
+
+                                top_k:
+                                    8
+
+                            })
+
+                    }
+
+                );
+
+
+
+            if (
+                !response.ok
+            ) {
+
+
+                let message =
+                    "API request failed.";
+
+
+
+                try {
+
+
+                    const errorData =
+                        await response.json();
+
+
+
+                    if (
+                        errorData.detail
+                    ) {
+
+
+                        message =
+                            errorData.detail;
+
+
+                    }
+
+
+                }
+
+
+                catch (
+                    ignored
+                ) {
+
+
+                    message =
+                        await response.text();
+
+
+                }
+
+
+
+                throw new Error(
+                    message
+                );
+
+
+            }
+
+
+
+            const data =
+                await response.json();
+
+
+
+            removeLoading();
+
+
+
+            addAssistantMessage(
+
+                data.answer
+                ||
+                "No answer was returned.",
+
+                data
+
+            );
+
+
+        }
+
+
+        catch (
+            error
+        ) {
+
+
+            removeLoading();
+
+
+
+            console.error(
+                error
+            );
+
+
+
+            addAssistantMessage(
+
+                (
+                    "Unable to process the request.\n\n"
+                    +
+                    "Please verify that the FastAPI "
+                    +
+                    "application and Ollama are running."
+                ),
+
+                {}
+
+            );
+
+
+        }
+
+
+        finally {
+
+
+            sendButton.disabled =
+                false;
+
+
+            input.focus();
+
+
+        }
+
+
+    }
+
+
+
+    /* =====================================================
+       SCROLL
+    ===================================================== */
+
+
+    function scrollToBottom() {
+
+
+        messages.scrollTop =
+            messages.scrollHeight;
+
+
+    }
+
+
+
+    /* =====================================================
+       INITIALIZE PAGE
+    ===================================================== */
+
+
+    checkHealth();
+
+
+    setInterval(
+        checkHealth,
+        15000
+    );
+
+
+    input.focus();
+
+
+</script>
+
+
+</body>
+
+</html>

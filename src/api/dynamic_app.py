@@ -1,22 +1,41 @@
 import os
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
 from fastapi import HTTPException
+from fastapi.responses import FileResponse
 
 from pydantic import BaseModel
 from pydantic import Field
 
 from src.rag.dynamic_answer_generator import (
-    DynamicOllamaTariffAnswerGenerator
+    DynamicOllamaTariffAnswerGenerator,
 )
 from src.rag.ollama_client import (
-    OllamaLLMClient
+    OllamaLLMClient,
 )
 from src.rag.service import (
-    TariffRAGService
+    TariffRAGService,
+)
+
+
+# =============================================================================
+# PROJECT PATHS
+# =============================================================================
+
+PROJECT_ROOT = (
+    Path(__file__)
+    .resolve()
+    .parents[2]
+)
+
+FRONTEND_FILE = (
+    PROJECT_ROOT
+    / "frontend"
+    / "index.html"
 )
 
 
@@ -26,35 +45,43 @@ from src.rag.service import (
 
 RATES_DIRECTORY = os.getenv(
     "RAG_RATES_DIRECTORY",
-    "output/rates"
+    str(
+        PROJECT_ROOT
+        / "output"
+        / "rates"
+    ),
 )
 
 PERSIST_DIRECTORY = os.getenv(
     "RAG_PERSIST_DIRECTORY",
-    "output/chroma_test"
+    str(
+        PROJECT_ROOT
+        / "output"
+        / "chroma_test"
+    ),
 )
 
 COLLECTION_NAME = os.getenv(
     "RAG_COLLECTION_NAME",
-    "electricity_tariff_test"
+    "electricity_tariff_test",
 )
 
 OLLAMA_MODEL = os.getenv(
     "OLLAMA_MODEL",
-    "llama3.2:latest"
+    "llama3.2:latest",
 )
 
 OLLAMA_TIMEOUT_SECONDS = float(
     os.getenv(
         "RAG_LLM_TIMEOUT_SECONDS",
-        "240"
+        "240",
     )
 )
 
 MAX_OUTPUT_TOKENS = int(
     os.getenv(
         "RAG_LLM_MAX_OUTPUT_TOKENS",
-        "700"
+        "700",
     )
 )
 
@@ -78,21 +105,22 @@ startup_error: str | None = None
 
 class AskRequest(BaseModel):
     """
-    User question submitted to the tariff intelligence system.
+    Natural-language tariff question.
     """
 
     question: str = Field(
         ...,
         min_length=2,
         description=(
-            "Natural-language electricity tariff question."
+            "Natural-language electricity "
+            "tariff question."
         ),
         examples=[
             (
                 "What is the Residential Service "
                 "Customer Charge?"
             )
-        ]
+        ],
     )
 
     top_k: int = Field(
@@ -101,9 +129,9 @@ class AskRequest(BaseModel):
         le=50,
         description=(
             "Requested retrieval depth. "
-            "The question planner may increase this "
-            "automatically for broad questions."
-        )
+            "The question planner may adjust "
+            "this automatically."
+        ),
     )
 
 
@@ -127,13 +155,13 @@ class HealthResponse(BaseModel):
 
 
 # =============================================================================
-# STARTUP
+# INITIALIZATION
 # =============================================================================
 
 def initialize_application() -> None:
     """
-    Initializes the structured tariff service, vector database
-    and local Ollama answer generator.
+    Initialize the tariff RAG system,
+    ChromaDB retrieval layer and Ollama LLM.
     """
 
     global rag_service
@@ -143,6 +171,39 @@ def initialize_application() -> None:
     startup_error = None
 
     try:
+
+        print(
+            "\n"
+            "========================================"
+        )
+
+        print(
+            "Initializing Electricity "
+            "Tariff Intelligence..."
+        )
+
+        print(
+            "========================================"
+        )
+
+        print(
+            f"Rates directory: "
+            f"{RATES_DIRECTORY}"
+        )
+
+        print(
+            f"Vector store: "
+            f"{PERSIST_DIRECTORY}"
+        )
+
+        print(
+            f"Ollama model: "
+            f"{OLLAMA_MODEL}"
+        )
+
+        print(
+            "\nLoading RAG service..."
+        )
 
         rag_service = TariffRAGService(
             rates_directory=(
@@ -154,16 +215,43 @@ def initialize_application() -> None:
             collection_name=(
                 COLLECTION_NAME
             ),
-            llm_enabled=False
+            llm_enabled=False,
         )
 
-        status = rag_service.get_status()
+        status = (
+            rag_service
+            .get_status()
+        )
 
         if not status.ready:
 
             raise RuntimeError(
-                "The tariff RAG service is not ready."
+                "The tariff RAG service "
+                "is not ready."
             )
+
+        print(
+            "RAG service loaded."
+        )
+
+        print(
+            f"Indexed chunks: "
+            f"{status.indexed_chunk_count}"
+        )
+
+        print(
+            f"Comparison records: "
+            f"{status.comparison_count}"
+        )
+
+        print(
+            f"Tariff documents: "
+            f"{status.rate_document_count}"
+        )
+
+        print(
+            "\nConnecting to Ollama..."
+        )
 
         llm_client = OllamaLLMClient(
             model=OLLAMA_MODEL,
@@ -172,14 +260,20 @@ def initialize_application() -> None:
             ),
             max_output_tokens=(
                 MAX_OUTPUT_TOKENS
-            )
+            ),
         )
 
         if not llm_client.health_check():
 
             raise RuntimeError(
-                "Ollama is not available."
+                "Ollama is not available. "
+                "Start Ollama and make sure "
+                f"{OLLAMA_MODEL} is installed."
             )
+
+        print(
+            "Ollama connected."
+        )
 
         dynamic_answer_generator = (
             DynamicOllamaTariffAnswerGenerator(
@@ -189,13 +283,24 @@ def initialize_application() -> None:
                 deterministic_generator=(
                     rag_service.answer_generator
                 ),
-                llm_client=llm_client,
+                llm_client=(
+                    llm_client
+                ),
                 max_output_tokens=(
                     MAX_OUTPUT_TOKENS
                 ),
                 fallback_on_error=True,
-                fallback_on_validation_failure=True
+                fallback_on_validation_failure=True,
             )
+        )
+
+        print(
+            "\nApplication initialized "
+            "successfully."
+        )
+
+        print(
+            "========================================\n"
         )
 
     except Exception as error:
@@ -206,10 +311,24 @@ def initialize_application() -> None:
 
         dynamic_answer_generator = None
 
+        print(
+            "\nAPPLICATION STARTUP ERROR:"
+        )
+
+        print(
+            startup_error
+        )
+
+        print()
+
+
+# =============================================================================
+# FASTAPI LIFESPAN
+# =============================================================================
 
 @asynccontextmanager
 async def lifespan(
-    app: FastAPI
+    app: FastAPI,
 ):
 
     initialize_application()
@@ -222,15 +341,45 @@ async def lifespan(
 # =============================================================================
 
 app = FastAPI(
-    title="Electricity Tariff Intelligence API",
+    title=(
+        "Electricity Tariff "
+        "Intelligence API"
+    ),
     description=(
-        "Grounded Retrieval-Augmented Generation API "
-        "for querying and comparing historical "
-        "electricity tariff documents."
+        "Grounded RAG application for "
+        "electricity tariff analysis."
     ),
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
+
+
+# =============================================================================
+# CHATBOT UI
+# =============================================================================
+
+@app.get(
+    "/ui",
+    include_in_schema=False,
+)
+def chatbot_ui():
+
+    if not FRONTEND_FILE.exists():
+
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                "frontend/index.html "
+                "was not found."
+            ),
+        )
+
+    return FileResponse(
+        path=str(
+            FRONTEND_FILE
+        ),
+        media_type="text/html",
+    )
 
 
 # =============================================================================
@@ -252,12 +401,13 @@ def root() -> dict[str, Any]:
             else "not_ready"
         ),
         "model": OLLAMA_MODEL,
+        "chatbot": "/ui",
         "documentation": "/docs",
         "endpoints": {
             "health": "/health",
             "ask": "/ask",
-            "examples": "/examples"
-        }
+            "examples": "/examples",
+        },
     }
 
 
@@ -267,7 +417,7 @@ def root() -> dict[str, Any]:
 
 @app.get(
     "/health",
-    response_model=HealthResponse
+    response_model=HealthResponse,
 )
 def health() -> HealthResponse:
 
@@ -284,10 +434,13 @@ def health() -> HealthResponse:
             error=(
                 startup_error
                 or "Service not initialized."
-            )
+            ),
         )
 
-    status = rag_service.get_status()
+    status = (
+        rag_service
+        .get_status()
+    )
 
     return HealthResponse(
         ready=(
@@ -312,7 +465,7 @@ def health() -> HealthResponse:
         embedding_model=(
             status.embedding_model
         ),
-        error=startup_error
+        error=startup_error,
     )
 
 
@@ -330,14 +483,14 @@ def examples() -> dict[str, Any]:
                 "question": (
                     "What is the Residential "
                     "Service Customer Charge?"
-                )
+                ),
             },
             {
                 "type": "rate_list",
                 "question": (
                     "What charges are available "
                     "under Lighting Service?"
-                )
+                ),
             },
             {
                 "type": "comparison",
@@ -345,22 +498,22 @@ def examples() -> dict[str, Any]:
                     "Compare the Residential "
                     "Transmission System Charge "
                     "effective in 2018 and 2023."
-                )
+                ),
             },
             {
                 "type": "rider_change",
                 "question": (
                     "Which Riders were added "
                     "in the new tariff?"
-                )
+                ),
             },
             {
                 "type": "section_coverage",
                 "question": (
                     "Which tariff sections are "
                     "marked not applicable?"
-                )
-            }
+                ),
+            },
         ]
     }
 
@@ -371,20 +524,28 @@ def examples() -> dict[str, Any]:
 
 @app.post("/ask")
 def ask(
-    request: AskRequest
+    request: AskRequest,
 ) -> dict[str, Any]:
     """
-    Processes any natural-language tariff question.
+    Process a natural-language tariff question.
 
-    The request flows through:
+    Flow:
 
-        question planner
-        retrieval
-        evidence selector
-        deterministic grounding
-        Ollama generation
-        validation
-        safe fallback
+        Question Planner
+            ↓
+        Retriever
+            ↓
+        ChromaDB
+            ↓
+        Evidence Selector
+            ↓
+        Deterministic Grounding
+            ↓
+        Ollama / Llama 3.2
+            ↓
+        Validation
+            ↓
+        Safe Fallback
     """
 
     if (
@@ -396,21 +557,24 @@ def ask(
             status_code=503,
             detail=(
                 startup_error
-                or "Tariff intelligence "
-                "service is not ready."
-            )
+                or (
+                    "Tariff intelligence "
+                    "service is not ready."
+                )
+            ),
         )
 
     try:
 
         result = (
-            dynamic_answer_generator.answer(
+            dynamic_answer_generator
+            .answer(
                 question=(
                     request.question
                 ),
                 requested_top_k=(
                     request.top_k
-                )
+                ),
             )
         )
 
@@ -420,7 +584,7 @@ def ask(
             status_code=400,
             detail=str(
                 error
-            )
+            ),
         ) from error
 
     except Exception as error:
@@ -430,7 +594,7 @@ def ask(
             detail=(
                 "Unable to process tariff "
                 f"question: {error}"
-            )
+            ),
         ) from error
 
     return result.to_dict()
